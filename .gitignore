@@ -2,3 +2,7 @@
 /.idea
 /vendor
 .DS_Store
+htdocs/Images/*
+htdocs/images/**/*
+error.log
+craft_*.sql
