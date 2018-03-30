@@ -117,6 +117,12 @@ function getItem ($entry) {
   if ($entry->headline) {
     $object['headline'] = $entry->headline;
   }
+  if ($entry->metaTitle) {
+    $object['metaTitle'] = $entry->metaTitle;
+  }
+  if ($entry->metaDescription) {
+    $object['metaDescription'] = $entry->metaDescription;
+  }
   if ($entry->slug) {
     $object['slug'] = $entry->slug;
   }
