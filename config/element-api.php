@@ -132,7 +132,6 @@ function getItem ($entry) {
   if ($entry->highlight) {
     $object['highlight'] = $entry->highlight;
   }
-
   if ($photos) {
     $object['image'] = $photos;
   }
@@ -151,7 +150,9 @@ function getItem ($entry) {
   if ($entry->descriptionExtra) {
     $object['descriptionExtra'] = $entry->descriptionExtra;
   }
-
+  if ($entry->vimeoId) {
+    $object['vimeoId'] = $entry->vimeoId;
+  }
   if ($entry->colorBackground) {
     $object['color'] = $entry->colorBackground;
   }
