@@ -355,6 +355,10 @@ function getBlocks($entry) {
           $blockItem->tables = $element;
         }
 
+	if ($key == 'vimeoId') {
+	  $blockItem->vimeoId = $element;
+	}
+
         if ($key == 'image') {
           $blockItem->image = getImages($element, $blockItem->type . ((isset($blockItem->handle)) ?  '_' . $blockItem->handle : ''));
         }
