@@ -97,6 +97,7 @@ function getItem ($entry) {
   $highlight= $entry->highlight;
   $handle = $entry->getSection()->handle;
   $photos = getPhotos($entry, $handle);
+//  $photosSquare = getPhotos($entry, $handle . '_square');
   $blocks = getBlocks($entry);
 
   $tags = getTags($entry);
@@ -132,6 +133,11 @@ function getItem ($entry) {
   if ($entry->highlight) {
     $object['highlight'] = $entry->highlight;
   }
+
+  if ($entry->imageSquare != '') {
+    $photosSquare = getPhotosSquare($entry, $handle . '_square');
+    $object['imageSquare'] = $photosSquare;
+  }
   if ($photos) {
     $object['image'] = $photos;
   }
@@ -153,10 +159,13 @@ function getItem ($entry) {
   if ($entry->vimeoId) {
     $object['vimeoId'] = $entry->vimeoId;
   }
+  if ($entry->vimeoUrl) {
+    $object['vimeoUrl'] = $entry->vimeoUrl;
+  }
   if ($entry->colorBackground) {
     $object['color'] = $entry->colorBackground;
   }
-  if ($entry->director) {
+  if (isset($entry->director[0])) {
     $object['director'] = $entry->director[0]->title;
   }
   if ($entry->facebookLink) {
@@ -190,6 +199,34 @@ function getPhotos($entry, $handle) {
   if (isset($entry->image)) {
     $photos = [];
     foreach ($entry->image as $photo) {
+      $photoObj = new stdClass();
+
+      $photoObj->handle = $handle;
+      $photoObj->mobile = $photo->getUrl($handle . '_mobile');
+      $photoObj->tablet = $photo->getUrl($handle . '_tablet');
+      $photoObj->desktop = $photo->getUrl($handle . '_desktop');
+      $photoObj->desktop_big = $photo->getUrl($handle . '_desktop_big');
+      $photoObj->desktop_extra_big = $photo->getUrl($handle . '_desktop_extra_big');
+
+      $photos[] = $photoObj;
+    }
+
+    return $photos;
+  }
+  else {
+    return;
+  }
+}
+
+function getPhotosSquare($entry, $handle) {
+
+  if (!isset($handle)) {
+    $handle = $entry->getSection()->handle;
+  }
+
+  if (isset($entry->imageSquare)) {
+    $photos = [];
+    foreach ($entry->imageSquare as $photo) {
       $photoObj = new stdClass();
 
       $photoObj->handle = $handle;
@@ -359,6 +396,10 @@ function getBlocks($entry) {
 	  $blockItem->vimeoId = $element;
 	}
 
+        if ($key == 'vimeoUrl') {
+          $blockItem->vimeoUrl = $element;
+        }
+
         if ($key == 'image') {
           $blockItem->image = getImages($element, $blockItem->type . ((isset($blockItem->handle)) ?  '_' . $blockItem->handle : ''));
         }
@@ -366,6 +407,10 @@ function getBlocks($entry) {
         if ($key == 'typeElement') {
           $blockItem->typeElement = getElements($element, $type[0].((isset($block->size)) ? '_'.$block->size : ''));
         }
+
+	if ($key == 'director') {	
+          $blockItem->director = $element->director;
+	}
 
         if ($key == 'items') {
           $blockItem->typeElement = getElements($element, $type[0].((isset($block->size)) ? '_'.$block->size : ''));
