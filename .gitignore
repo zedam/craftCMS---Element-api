@@ -4,5 +4,6 @@
 .DS_Store
 htdocs/Images/*
 htdocs/images/**/*
+htdocs/htdocs/**/*
 error.log
 craft_*.sql
