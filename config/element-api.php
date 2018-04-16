@@ -57,6 +57,10 @@ return [
 
     //projects
     'api/<slug:{slug}>.json' => function ($slug) {
+
+Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', '*');
+Craft::$app->getResponse()->getHeaders()->set('Cache-control', 'max-age=3600');
+Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', 'Cache-control');
       return [
         'elementType' => Entry::class,
         'criteria' => ['section' => $slug],
@@ -67,6 +71,10 @@ return [
       ];
     },
     'api/<slug:{slug}>/<entryId:\d+>.json' => function ($slug, $entryId) {
+
+Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', '*');
+Craft::$app->getResponse()->getHeaders()->set('Cache-control', 'max-age=3600');
+Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', 'Cache-control');
       return [
         'elementType' => Entry::class,
         'criteria' => ['section' => $slug, 'id' => $entryId],
@@ -80,6 +88,14 @@ return [
 
     //projects
     'api/pages/<slug:{slug}>.json' => function ($slug) {
+
+Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', '*');
+Craft::$app->getResponse()->getHeaders()->set('Cache-control', 'max-age=3600');
+Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', 'Cache-control');
+//    HeaderHelper::setHeader([
+  //      'Access-Control-Allow-Origin' => 'http://test.thebrut.es'
+   // ]);
+
       return [
         'elementType' => Entry::class,
         'pageParam' => 'pg',
@@ -166,7 +182,7 @@ function getItem ($entry) {
     $object['color'] = $entry->colorBackground;
   }
   if (isset($entry->director[0])) {
-    $object['director'] = $entry->director[0]->title;
+    $object['director'] = $entry->director[0];
   }
   if ($entry->facebookLink) {
     $object['facebookLink'] = $entry->facebookLink;
