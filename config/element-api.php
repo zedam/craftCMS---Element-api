@@ -84,7 +84,7 @@ return [
           if ($entry->getSection()->handle == 'directors') {
 
             $nextEntry = $entry->getNext([
-              'section' => 'directors',
+              'section' => $entry->getSection()->handle,
               'order' => 'postDate asc'
             ]);
 
@@ -96,6 +96,8 @@ return [
               ]);
 
             }
+          } else {
+            $nextEntry = '';
           }
 
           //$nextEntry = $entry->getNext($criteria);
