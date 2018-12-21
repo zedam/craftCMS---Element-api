@@ -20,7 +20,7 @@
   },
   "require": {
     "php": ">=7.0.0",
-    "craftcms/cms": "^3.0.0-RC1",
+    "craftcms/cms": "3.0.5",
     "vlucas/phpdotenv": "^2.4.0",
     "roave/security-advisories": "dev-master",
     "ether/simplemap": "v3.3.1",
@@ -31,7 +31,7 @@
     "dukt/videos": "2.0.0-beta.6",
     "craftcms/ckeditor": "1.0.0-beta.2",
     "mikestecker/craft-videoembedder": "v1.0.4",
-    "rias/craft-colour-swatches": "1.0.6",
+    "rias/craft-colour-swatches": "1.1.0",
     "dolphiq/sitemap": "^1.0"
   },
   "autoload": {
