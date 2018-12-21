@@ -55,12 +55,12 @@ return [
       ];
     },*/
 
-    //projects
+    //channels
     'api/<slug:{slug}>.json' => function ($slug) {
 
-Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', '*');
-Craft::$app->getResponse()->getHeaders()->set('Cache-control', 'max-age=3600');
-Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', 'Cache-control');
+      Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', '*');
+      Craft::$app->getResponse()->getHeaders()->set('Cache-control', 'max-age=3600');
+      Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', 'Cache-control');
       return [
         'elementType' => Entry::class,
         'criteria' => ['section' => $slug],
@@ -72,29 +72,39 @@ Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', 'C
     },
     'api/<slug:{slug}>/<entryId:\d+>.json' => function ($slug, $entryId) {
 
-Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', '*');
-Craft::$app->getResponse()->getHeaders()->set('Cache-control', 'max-age=3600');
-Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', 'Cache-control');
+      Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', '*');
+      Craft::$app->getResponse()->getHeaders()->set('Cache-control', 'max-age=3600');
+      Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', 'Cache-control');
       return [
         'elementType' => Entry::class,
         'criteria' => ['section' => $slug, 'id' => $entryId],
         'one' => TRUE,
         'transformer' => function (Entry $entry) {
-          $object = getItem($entry);
+
+          if ($entry->getSection()->handle == 'directors') {
+
+            $nextEntry = $entry->getNext([
+              'section' => 'directors',
+              'order' => 'postDate asc'
+            ]);
+          }
+
+          //$nextEntry = $entry->getNext($criteria);
+          $object = getItem($entry, $nextEntry);
           return $object;
         },
       ];
     },
 
-    //projects
+    //pages
     'api/pages/<slug:{slug}>.json' => function ($slug) {
 
-Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', '*');
-Craft::$app->getResponse()->getHeaders()->set('Cache-control', 'max-age=3600');
-Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', 'Cache-control');
-//    HeaderHelper::setHeader([
-  //      'Access-Control-Allow-Origin' => 'http://test.thebrut.es'
-   // ]);
+    Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Origin', '*');
+    Craft::$app->getResponse()->getHeaders()->set('Cache-control', 'max-age=3600');
+    Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', 'Cache-control');
+      //    HeaderHelper::setHeader([
+      //      'Access-Control-Allow-Origin' => 'http://test.thebrut.es'
+      // ]);
 
       return [
         'elementType' => Entry::class,
@@ -109,7 +119,7 @@ Craft::$app->getResponse()->getHeaders()->set('Access-Control-Allow-Headers', 'C
   ]
 ];
 
-function getItem ($entry) {
+function getItem ($entry, $nextEntry) {
   $highlight= $entry->highlight;
   $handle = $entry->getSection()->handle;
   $photos = getPhotos($entry, $handle);
@@ -123,6 +133,10 @@ function getItem ($entry) {
   }
   if ($handle) {
     $object['handle'] = $handle;
+
+    if ($handle == 'directors') {
+      $object['nextDirector'] = $nextEntry;
+    }
   }
   if ($highlight) {
     $object['highlight'] = $highlight;
