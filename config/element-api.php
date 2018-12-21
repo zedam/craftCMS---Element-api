@@ -87,6 +87,15 @@ return [
               'section' => 'directors',
               'order' => 'postDate asc'
             ]);
+
+            //var_dump($nextEntry);
+            if ($nextEntry != null && $nextEntry->id == 184) {
+              $nextEntry = $nextEntry->getNext([
+                'section' => 'directors',
+                'order' => 'postDate asc'
+              ]);
+
+            }
           }
 
           //$nextEntry = $entry->getNext($criteria);
@@ -136,6 +145,18 @@ function getItem ($entry, $nextEntry) {
 
     if ($handle == 'directors') {
       $object['nextDirector'] = $nextEntry;
+
+      if ($nextEntry != null){
+
+        $nextnextEntry = $nextEntry->getNext([
+          'section' => 'directors',
+          'order' => 'postDate asc'
+        ]);
+      } else {
+        $nextnextEntry = null;
+      }
+
+      $object['nextDirector2'] = $nextnextEntry;
     }
   }
   if ($highlight) {
