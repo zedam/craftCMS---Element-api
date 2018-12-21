@@ -82,21 +82,57 @@ return [
         'transformer' => function (Entry $entry) {
 
           if ($entry->getSection()->handle == 'directors') {
+            $directors = Craft::$app->getEntries()->getEntryById(54);
 
-            $nextEntry = $entry->getNext([
-              'section' => $entry->getSection()->handle,
-              'order' => 'postDate asc'
-            ]);
+            $directorsBlocks = getBlocks($directors);
+            $countDirectors = count($directorsBlocks[0]->typeElement);
+            $count = 0;
 
-            //var_dump($nextEntry);
-            if ($nextEntry != null && $nextEntry->id == 184) {
-              $nextEntry = $nextEntry->getNext([
-                'section' => 'directors',
-                'order' => 'postDate asc'
-              ]);
-
+            foreach ($directorsBlocks[0]->typeElement as $directorsBlock) {
+              $count++;
+              if ($directorsBlock->id == $entry->id) {
+                break;
+              }
             }
+
+            if ($count >= $countDirectors) {
+              $count = 0;
+            }
+
+            $nextEntry = array(
+              "id" => $directorsBlocks[0]->typeElement[$count]->id,
+              "title" => $directorsBlocks[0]->typeElement[$count]->title,
+              "slug" => $directorsBlocks[0]->typeElement[$count]->slug,
+            );
+          } elseif ($entry->getSection()->handle == 'projects') {
+
+            $directorId = $entry->director[0]->id;
+            $directorEntry = Craft::$app->getEntries()->getEntryById($directorId);
+            $directorProjects = getBlocks($directorEntry);
+            $directoProjectsBlocks = $directorProjects[0]->typeElement;
+
+            $countProjects = count($directoProjectsBlocks);
+            $count = 0;
+
+            foreach ($directoProjectsBlocks as $directorProject) {
+              $count++;
+              if ($directorProject->id == $entry->id) {
+                break;
+              }
+            }
+
+            if ($count >= $countProjects) {
+              $count = 0;
+            }
+
+            $nextEntry = array(
+              "id" => $directorProjects[0]->typeElement[$count]->id,
+              "title" => $directorProjects[0]->typeElement[$count]->title,
+              "slug" => $directorProjects[0]->typeElement[$count]->slug,
+            );
+
           } else {
+
             $nextEntry = '';
           }
 
@@ -145,20 +181,8 @@ function getItem ($entry, $nextEntry) {
   if ($handle) {
     $object['handle'] = $handle;
 
-    if ($handle == 'directors') {
-      $object['nextDirector'] = $nextEntry;
-
-      if ($nextEntry != null){
-
-        $nextnextEntry = $nextEntry->getNext([
-          'section' => 'directors',
-          'order' => 'postDate asc'
-        ]);
-      } else {
-        $nextnextEntry = null;
-      }
-
-      $object['nextDirector2'] = $nextnextEntry;
+    if ($nextEntry != '') {
+      $object['nextEntry'] = $nextEntry;
     }
   }
   if ($highlight) {
@@ -445,9 +469,9 @@ function getBlocks($entry) {
           $blockItem->tables = $element;
         }
 
-	if ($key == 'vimeoId') {
-	  $blockItem->vimeoId = $element;
-	}
+        if ($key == 'vimeoId') {
+          $blockItem->vimeoId = $element;
+        }
 
         if ($key == 'vimeoUrl') {
           $blockItem->vimeoUrl = $element;
@@ -461,9 +485,9 @@ function getBlocks($entry) {
           $blockItem->typeElement = getElements($element, $type[0].((isset($block->size)) ? '_'.$block->size : ''));
         }
 
-	if ($key == 'director') {	
-          $blockItem->director = $element->director;
-	}
+        if ($key == 'director') {
+              $blockItem->director = $element->director;
+        }
 
         if ($key == 'items') {
           $blockItem->typeElement = getElements($element, $type[0].((isset($block->size)) ? '_'.$block->size : ''));
