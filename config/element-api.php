@@ -65,7 +65,7 @@ return [
         'elementType' => Entry::class,
         'criteria' => ['section' => $slug],
         'transformer' => function (Entry $entry) {
-          $object = getItem($entry);
+          $object = getItem($entry, null);
           return $object;
         },
       ];
@@ -111,7 +111,7 @@ return [
         'pageParam' => 'pg',
         'criteria' => ['section' => $slug],
         'transformer' => function (Entry $entry) {
-          $object = getItem($entry);
+          $object = getItem($entry, null);
           return $object;
         },
       ];
