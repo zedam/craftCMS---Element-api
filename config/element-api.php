@@ -172,8 +172,7 @@ function getItem ($entry, $nextEntry) {
   $photos = getPhotos($entry, $handle);
 //  $photosSquare = getPhotos($entry, $handle . '_square');
   $blocks = getBlocks($entry);
-
-  $tags = getTags($entry);
+  $tags = $nextEntry == null ? '' : getTags($entry);
 
   if ($entry->id) {
     $object['id'] = $entry->id;
@@ -262,6 +261,13 @@ function getItem ($entry, $nextEntry) {
   }
   if ($entry->tables) {
     $object['tables'] = $entry->tables;
+  }
+
+  if ($entry->videoMp4[0] != 'default') {
+    $object['videoMp4'] = $entry->videoMp4[0];
+  }
+  if ($entry->videoWebm[0] != 'default') {
+    $object['videoWebm'] = $entry->videoWebm[0];
   }
 
   return $object;
@@ -412,6 +418,16 @@ function getElements($entry, $type) {
       if ($key == 'description') {
         $elementItem->description = $el;
       }
+      if ($key == 'videoMp4') {
+        if ($el[0] != 'default') {
+          $elementItem->videoMp4 = $el[0];
+        }
+      }
+      if ($key == 'videoWebm') {
+        if ($el[0] != 'default') {
+          $elementItem->videoWebm = $el[0];
+        }
+      }
       if ($key == 'blocks') {
         $elementItem->blocks = $blocks;
       }
@@ -439,6 +455,7 @@ function getBlocks($entry) {
     foreach ($entry->blocks as $block) {
       $blockItem = new stdClass();
       $type = [];
+
       foreach ($block->type as $key => $element) {
         if ($key == 'handle') {
           $type[] = $element;
@@ -486,13 +503,61 @@ function getBlocks($entry) {
         }
 
         if ($key == 'director') {
-              $blockItem->director = $element->director;
+          $blockItem->director = $element->director;
         }
 
         if ($key == 'items') {
           $blockItem->typeElement = getElements($element, $type[0].((isset($block->size)) ? '_'.$block->size : ''));
         }
+        
+        if ($key == 'itemsProjects') {
+         
+          foreach ($element as $key => $item) {
+            $itemProject = new stdClass();
+            $project = new stdClass();
+            $project->id = $item->item[0]->id;
 
+            $project->handle = $item->item[0]->getSection()->handle;
+            $project->title = $item->item[0]->title;
+            $project->slug = $item->item[0]->slug;
+            $project->image = getImages($item->item[0]->image, $blockItem->type. $item->position);
+            $project->headline = $item->item[0]->headline;
+            $project->uri = $item->item[0]->uri;
+            $project->status = $item->item[0]->status;
+            $project->vimeoId = $item->item[0]->vimeoId;
+            $project->vimeoUrl = $item->item[0]->vimeoUrl;
+            $project->tags = [];
+
+            foreach ($item->item[0]->tags as $key => $tag) {
+               $tagItem = new stdClass();
+                $tagItem->title = $tag->title;
+                $tagItem->slug = $tag->slug;
+                $project->tags[] = $tagItem;
+            }
+
+            $itemProject->item = $project;
+            $itemProject->position = $item->position;
+
+            $blockItem->itemsProjects[] = $itemProject;
+          }
+        }
+
+        if ($key == 'imagesList') {
+
+          $blockItem->images = [];
+
+          foreach ($element as $key => $item) {
+            $image = new stdClass();
+
+            $image->position = $item->position;
+            $image->type = $blockItem->type;
+            if ($item->image[0]) {
+              $image->item = getImages($item->image, 'blockListProjects' . $image->position);
+            }
+            
+            $blockItem->images[] = $image;
+          }
+        }
       }
 
       $blocks[] = $blockItem;
