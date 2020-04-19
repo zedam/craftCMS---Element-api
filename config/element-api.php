@@ -14,47 +14,35 @@ use craft\elements\MatrixBlock;
 
 return [
   'endpoints' => [
-    /*'api/directors.json' => [
-      'elementType' => Entry::class,
-      'criteria' => ['section' => 'directors'],
-      'transformer' => function (Entry $entry) {
-        $object = getItem($entry);
-        return $object;
-      },
-    ],
-    'api/directors/<entryId:\d+>.json' => function ($entryId) {
+    'api/globals.json' => function() {
       return [
-        'elementType' => Entry::class,
-        'criteria' => ['section' => 'directors', 'id' => $entryId],
-        'one' => TRUE,
-        'transformer' => function (Entry $entry) {
-          $object = getItem($entry);
-          return $object;
-        },
-      ];
-    },
+          /* 'elementType' => 'GlobalSet',
+          'criteria' => ['handle' => 'footer'],
+          'transformer' => function(GlobalSetModel $siteSettings) {
+            return [
+                'defaultTitle' => $siteSettings->description
+            ]; */
 
-    //projects
-    'api/projects.json' => [
-      'elementType' => Entry::class,
-      'criteria' => ['section' => 'projects'],
-      'transformer' => function (Entry $entry) {
-        $object = getItem($entry);
-        return $object;
-      },
-    ],
-    'api/projects/<entryId:\d+>.json' => function ($entryId) {
-      return [
-        'elementType' => Entry::class,
-        'criteria' => ['section' => 'projects', 'id' => $entryId],
-        'one' => TRUE,
-        'transformer' => function (Entry $entry) {
-          $object = getItem($entry);
-          return $object;
-        },
+            'elementType' =>  'craft\elements\GlobalSet',
+            'criteria' => ['handle' => 'footer'],
+            'transformer' => function($footer) 
+            {
+              return [
+                'footerText' => $footer->footerText,
+                'social' => [
+                  'behanceLink' => $footer->behanceLink,
+                  'facebookLink' => $footer->facebookLink,
+                  'linkedinLink' => $footer->linkedinLink,
+                  'instagramLink' => $footer->instagramLink,
+                  'vimeoLink' => $footer->vimeoLink,
+                ],
+                'colorBackground' => $footer->colorBackground,
+              ];
+                // our data here
+            }
+        
       ];
-    },*/
-
+  },
     //channels
     'api/<slug:{slug}>.json' => function ($slug) {
 
@@ -232,6 +220,9 @@ function getItem ($entry, $nextEntry) {
   if ($entry->descriptionExtra) {
     $object['descriptionExtra'] = $entry->descriptionExtra;
   }
+  if ($entry->followText) {
+    $object['followText'] = $entry->followText;
+  }
   if ($entry->vimeoId) {
     $object['vimeoId'] = $entry->vimeoId;
   }
@@ -273,6 +264,33 @@ function getItem ($entry, $nextEntry) {
   return $object;
 }
 
+function getPhotosCount ($entry, $handle, $count) {
+
+  if (!isset($handle)) {
+    $handle = $entry->getSection()->handle;
+  }
+
+  if (isset($entry->image)) {
+    $photos = [];
+    foreach ($entry->image as $photo) {
+      $photoObj = new stdClass();
+
+      $photoObj->handle = $handle;
+      $photoObj->mobile = $photo->getUrl($handle . $count . '_mobile');
+      $photoObj->tablet = $photo->getUrl($handle . $count . '_tablet');
+      $photoObj->desktop = $photo->getUrl($handle . $count . '_desktop');
+      $photoObj->desktop_big = $photo->getUrl($handle . $count . '_desktop_big');
+      $photoObj->desktop_extra_big = $photo->getUrl($handle . $count . '_desktop_extra_big');
+
+      $photos[] = $photoObj;
+    }
+
+    return $photos;
+  }
+  else {
+    return;
+  }
+} 
 function getPhotos($entry, $handle) {
 
   if (!isset($handle)) {
@@ -377,15 +395,22 @@ function getDirector($entry) {
 
 function getElements($entry, $type) {
   $elementsArray = [];
+  $count = 0;
 
   foreach ($entry as $element) {
     $handle = $element->getSection()->handle;
-    $photos = getPhotos($element,  $type);
+    
     $blocks = getBlocks($element, $handle);
     $tags = getTags($element);
     $director = getDirector($element);
-
     $elementItem = new stdClass();
+    
+    if ($type == 'blockDoubleItems') {
+      $photos = getPhotosCount($element, $type, $count);
+    } else {
+      $photos = getPhotos($element, $type);
+    }
+    $count ++;
 
     foreach ($element as $key => $el) {
       if ($key == 'id') {
@@ -495,7 +520,7 @@ function getBlocks($entry) {
         }
 
         if ($key == 'image') {
-          $blockItem->image = getImages($element, $blockItem->type . ((isset($blockItem->handle)) ?  '_' . $blockItem->handle : ''));
+          $blockItem->image = getImages($element, $blockItem->type . ((isset($blockItem->handle)) ?  '_' . $blockItem->handle . '' : '') );
         }
 
         if ($key == 'typeElement') {
