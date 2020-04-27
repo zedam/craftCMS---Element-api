@@ -96,31 +96,33 @@ return [
 
             $directorId = $entry->director[0]->id;
             $directorEntry = Craft::$app->getEntries()->getEntryById($directorId);
-            $directorProjects = getBlocks($directorEntry);
-            $directoProjectsBlocks = $directorProjects[0]->typeElement;
+            $directorProjects = getBlocks($entry->director[0]);
+            
+            $directoProjectsBlocks = $directorProjects[0]->itemsProjects;
 
             $countProjects = count($directoProjectsBlocks);
             $count = 0;
 
             foreach ($directoProjectsBlocks as $directorProject) {
               $count++;
-              if ($directorProject->id == $entry->id) {
+              if ($directorProject->item->id == $entry->id) {
                 break;
               }
             }
-
+          
             if ($count >= $countProjects) {
               $count = 0;
             }
 
             $nextEntry = array(
-              "id" => $directorProjects[0]->typeElement[$count]->id,
-              "title" => $directorProjects[0]->typeElement[$count]->title,
-              "slug" => $directorProjects[0]->typeElement[$count]->slug,
+              "count" => $count,
+              "countProjects" => $countProjects,
+              "id" => $directorProjects[0]->itemsProjects[$count]->item->id,
+              "title" => $directorProjects[0]->itemsProjects[$count]->item->title,
+              "slug" => $directorProjects[0]->itemsProjects[$count]->item->slug,
             );
 
           } else {
-
             $nextEntry = '';
           }
 
