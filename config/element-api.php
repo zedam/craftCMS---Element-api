@@ -540,30 +540,32 @@ function getBlocks($entry) {
           foreach ($element as $key => $item) {
             $itemProject = new stdClass();
             $project = new stdClass();
-            $project->id = $item->item[0]->id;
-
-            $project->handle = $item->item[0]->getSection()->handle;
-            $project->title = $item->item[0]->title;
-            $project->slug = $item->item[0]->slug;
-            $project->image = getImages($item->item[0]->image, $blockItem->type. $item->position);
-            $project->headline = $item->item[0]->headline;
-            $project->uri = $item->item[0]->uri;
-            $project->status = $item->item[0]->status;
-            $project->vimeoId = $item->item[0]->vimeoId;
-            $project->vimeoUrl = $item->item[0]->vimeoUrl;
-            $project->tags = [];
-
-            foreach ($item->item[0]->tags as $key => $tag) {
-               $tagItem = new stdClass();
+            if (isset($item->item[0])) {
+              $project->id = $item->item[0]->id; 
+              $project->title = $item->item[0]->title;
+              $project->handle = $item->item[0]->getSection()->handle;
+              $project->slug = $item->item[0]->slug;
+              $project->image = getImages($item->item[0]->image, $blockItem->type. $item->position);
+              $project->headline = $item->item[0]->headline;
+              $project->uri = $item->item[0]->uri;
+              $project->status = $item->item[0]->status;
+              $project->vimeoId = $item->item[0]->vimeoId;
+              $project->vimeoUrl = $item->item[0]->vimeoUrl;
+              $project->tags = [];
+              
+              foreach ($item->item[0]->tags as $key => $tag) {
+                $tagItem = new stdClass();
                 $tagItem->title = $tag->title;
                 $tagItem->slug = $tag->slug;
                 $project->tags[] = $tagItem;
+              }
+              
+              $itemProject->item = $project;
+              $itemProject->position = $item->position;
+
+              $blockItem->itemsProjects[] = $itemProject;
+
             }
-
-            $itemProject->item = $project;
-            $itemProject->position = $item->position;
-
-            $blockItem->itemsProjects[] = $itemProject;
           }
         }
 
