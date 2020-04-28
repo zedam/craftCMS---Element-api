@@ -93,7 +93,7 @@ return [
               "slug" => $directorsBlocks[0]->typeElement[$count]->slug,
             );
           } elseif ($entry->getSection()->handle == 'projects') {
-            if ($entry->director[0] != null) {
+            if ($entry->director[0] != 'default') {
               $directorId = $entry->director[0]->id;
               $directorEntry = Craft::$app->getEntries()->getEntryById($directorId);
               $directorProjects = getBlocks($entry->director[0]);
