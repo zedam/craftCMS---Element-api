@@ -93,34 +93,38 @@ return [
               "slug" => $directorsBlocks[0]->typeElement[$count]->slug,
             );
           } elseif ($entry->getSection()->handle == 'projects') {
+            if ($entry->director[0] != null) {
+              $directorId = $entry->director[0]->id;
+              $directorEntry = Craft::$app->getEntries()->getEntryById($directorId);
+              $directorProjects = getBlocks($entry->director[0]);
+              
+              $directoProjectsBlocks = $directorProjects[0]->itemsProjects;
 
-            $directorId = $entry->director[0]->id;
-            $directorEntry = Craft::$app->getEntries()->getEntryById($directorId);
-            $directorProjects = getBlocks($entry->director[0]);
-            
-            $directoProjectsBlocks = $directorProjects[0]->itemsProjects;
-
-            $countProjects = count($directoProjectsBlocks);
-            $count = 0;
-
-            foreach ($directoProjectsBlocks as $directorProject) {
-              $count++;
-              if ($directorProject->item->id == $entry->id) {
-                break;
-              }
-            }
-          
-            if ($count >= $countProjects) {
+              $countProjects = count($directoProjectsBlocks);
               $count = 0;
-            }
 
-            $nextEntry = array(
-              "count" => $count,
-              "countProjects" => $countProjects,
-              "id" => $directorProjects[0]->itemsProjects[$count]->item->id,
-              "title" => $directorProjects[0]->itemsProjects[$count]->item->title,
-              "slug" => $directorProjects[0]->itemsProjects[$count]->item->slug,
-            );
+              foreach ($directoProjectsBlocks as $directorProject) {
+                $count++;
+                if ($directorProject->item->id == $entry->id) {
+                  break;
+                }
+              }
+            
+              if ($count >= $countProjects) {
+                $count = 0;
+              }
+
+              $nextEntry = array(
+                "count" => $count,
+                "countProjects" => $countProjects,
+                "id" => $directorProjects[0]->itemsProjects[$count]->item->id,
+                "title" => $directorProjects[0]->itemsProjects[$count]->item->title,
+                "slug" => $directorProjects[0]->itemsProjects[$count]->item->slug,
+              );
+            } else {
+
+              $nextEntry = '';
+            }
 
           } else {
             $nextEntry = '';
