@@ -267,6 +267,13 @@ function getItem ($entry, $nextEntry) {
     $object['videoWebm'] = $entry->videoWebm[0];
   }
 
+  if ($entry->videoMobileMp4[0] != 'default') {
+    $object['videoMobileMp4'] = $entry->videoMobileMp4[0];
+  }
+  if ($entry->videoMobileWebm[0] != 'default') {
+    $object['videoMobileWebm'] = $entry->videoMobileWebm[0];
+  }
+
   return $object;
 }
 
