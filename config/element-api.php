@@ -182,7 +182,7 @@ function getItem ($entry, $nextEntry) {
     $object['highlight'] = $highlight;
   }
   if ($entry->linkedArticle) {
-    $object['linkedArticle'] = getLinkArticle($entry);
+    $object['linkedArticle'] = getLinkedArticle($entry);
   }
   if ($entry->title) {
     $object['title'] = $entry->title;
@@ -363,13 +363,14 @@ function getPhotosSquare($entry, $handle) {
   }
 }
 
-function getLinkArticle($entry) {
+function getLinkedArticle($entry) {
   if (isset($entry->linkedArticle)) {
     $linkedArticles = [];
 
     foreach ($entry->linkedArticle as $linkedArticle) {
       $linkedArticleItem = new stdClass();
       $linkedArticleItem->url = $linkedArticle->url;
+      $linkedArticleItem->uri = $linkedArticle->uri;
       $linkedArticles [] = $linkedArticleItem;
     }
 
@@ -436,6 +437,7 @@ function getElements($entry, $type) {
     $tags = getTags($element);
     $director = getDirector($element);
     $elementItem = new stdClass();
+    $linkedArticle = getLinkedArticle($element);
     
     if ($type == 'blockDoubleItems') {
       $photos = getPhotosCount($element, $type, $count);
@@ -455,7 +457,7 @@ function getElements($entry, $type) {
         $elementItem->headline = $el;
       }
       if ($key == 'linkedArticle') {
-        $elementItem->linkedArticle = getLinkArticle($el);
+        $elementItem->linkedArticle = $linkedArticle;
       }
       if ($key == 'slug') {
         $elementItem->slug = $el;
