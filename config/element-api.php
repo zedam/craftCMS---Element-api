@@ -371,6 +371,8 @@ function getLinkedArticle($entry) {
       $linkedArticleItem = new stdClass();
       $linkedArticleItem->url = $linkedArticle->url;
       $linkedArticleItem->uri = $linkedArticle->uri;
+      $linkedArticleItem->handle = $linkedArticle->getSection()->handle;
+      $linkedArticleItem->id = $linkedArticle->id;
       $linkedArticles [] = $linkedArticleItem;
     }
 
