@@ -181,6 +181,9 @@ function getItem ($entry, $nextEntry) {
   if ($highlight) {
     $object['highlight'] = $highlight;
   }
+  if ($entry->linkedArticle) {
+    $object['linkedArticle'] = getLinkArticle($entry);
+  }
   if ($entry->title) {
     $object['title'] = $entry->title;
   }
@@ -360,6 +363,22 @@ function getPhotosSquare($entry, $handle) {
   }
 }
 
+function getLinkArticle($entry) {
+  if (isset($entry->linkedArticle)) {
+    $linkedArticles = [];
+
+    foreach ($entry->linkedArticle as $linkedArticle) {
+      $linkedArticleItem = new stdClass();
+      $linkedArticleItem->url = $linkedArticle->url;
+      $linkedArticles [] = $linkedArticleItem;
+    }
+
+    return $linkedArticles;
+  }
+  else {
+    return;
+  }
+}
 function getTags($entry) {
   if (isset($entry->tags)) {
     $tags = [];
@@ -434,6 +453,9 @@ function getElements($entry, $type) {
       }
       if ($key == 'headline') {
         $elementItem->headline = $el;
+      }
+      if ($key == 'linkedArticle') {
+        $elementItem->linkedArticle = getLinkArticle($el);
       }
       if ($key == 'slug') {
         $elementItem->slug = $el;
